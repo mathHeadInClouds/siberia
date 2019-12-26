@@ -22,13 +22,13 @@ of the object, you will encouter more objects; namely, some of the values of tho
 recursively going on in the same way. All of those objects will go into an array called `forest`. the "trees"
 (entries of the forest array) "are" (nay, "have the same information as") those encountered objects, and the
 tree at index zero "is" (nay, encodes) the root. The trees will have the same keys as the original objects,
-but the values are changed. A value, if originally an object is replaced by the non-negative integer which is
+but the values are changed. A value, if originally an object, is replaced by the non-negative integer which is
 the array index of the tree which encodes that object. And those values which are originally not objects become
 negative integers. Those, in turn, if you drop the minus sign again, are then indices into the `flatValues` array
 which is a sibling of `forest` in the result object `.forestify` has returned. `flatValues` will cluster together
 by type (string, number, etc.) details below.
 
-In the example, the root, our object `myData` is encoded by the tree `forest[0]` which has the same keys as `myData`
+In the example, the root (our object `myData`) is encoded by the tree `forest[0]` which has the same keys as `myData`
 (namely, "people" and "fruits"), with respective values 1 and 12, meaning that `forest[1]` and `forest[12]`,
 respectively encode `myData.people` and `myData.fruits`. Now, `forest[1]` is an array with entries 2 and 6, which
 means that `forest[2]` "is" Joe and `forest[6]` "is" Jane. `forest[2]` has name `-1`, and, dropping the minus
