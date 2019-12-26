@@ -27,3 +27,10 @@ the array index of the tree which encodes that object. And those values which ar
 negative integers. Those, in turn, if you drop the minus sign again, are then indices into the `flatValues` array
 which is a sibling of `forest` in the result object `.forestify` has returned. `flatValues` will cluster together
 by type (string, number, etc.) details below.
+
+In the example, the root, our object `myData` is encoded by the tree `forest[0]` which has the same keys as `myData`
+(namely, "people" and "fruits"), with respective values 1 and 12, meaning that `forest[1]` and `forest[12]`,
+respectively encode `myData.people` and `myData.fruits`. Now, `forest[1]` is an array with entries 2 and 6, which
+means that `forest[2]` "is" Joe and `forest[6]` "is" Jane. `forest[2]` has name `-1`, and, dropping the minus
+sign, `flatValues[1]` is indeed "Joe", the name property of `Joe` (or `myData.people[0]`). Next Joe trees says
+he likes 3, that is 4 and 10, so trees 4 and 10 "are" the apple and the orange. And so on.
