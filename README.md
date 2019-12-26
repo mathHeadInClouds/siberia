@@ -32,5 +32,5 @@ In the example, the root (our object `myData`) is encoded by the tree `forest[0]
 (namely, "people" and "fruits"), with respective values 1 and 12, meaning that `forest[1]` and `forest[12]`,
 respectively encode `myData.people` and `myData.fruits`. Now, `forest[1]` is an array with entries 2 and 6, which
 means that `forest[2]` "is" Joe and `forest[6]` "is" Jane. `forest[2]` has name `-1`, and, dropping the minus
-sign, `flatValues[1]` is indeed "Joe", the name property of `Joe` (or `myData.people[0]`). Next Joe trees says
+sign, `flatValues[1]` is indeed "Joe", the name property of `Joe` (or `myData.people[0]`). Next, Joe's tree says
 he likes 3, that is 4 and 10, so trees 4 and 10 "are" the apple and the orange. And so on.
