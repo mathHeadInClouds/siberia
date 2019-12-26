@@ -1,0 +1,8 @@
+This software is published under the Lysander Spooners Middle Finger license.
+
+That means, if you describe what you are doing as "upholding copyright",
+then there is absolutely no action you could possibly perform on my (=author of the software) behalf;
+i.e., whatever you are doing, you're not doing it on my behalf. Well, except, drop dead.
+Also, this software may be used by everybody without restriction. Except people who describe what they
+are doing as "upholding copyright". Those are not allowed to use the software. And if you ever sued someone
+for "copyright violation", you're not allowed to use the software.
