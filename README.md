@@ -51,14 +51,7 @@ Other methods of `JSON.Siberia`:
 are what `.serialize` does. The respective inverses of `.forestify`, `.stringify`, and `.serialize` are
 `.unforestify`, `.unstringify`, and `.unserialize`.
 
-                                                 `.serialize`
-                   -------------------------------------------------------------------->
-                      `.forestify`                                   `.stringify`
-object with cycles --------------------> object without cycles ------------------------> string
-                   <--------------------                       <------------------------
-                       `.unforestify`                                `.unstrigify`       
-                   <--------------------------------------------------------------------
-                                              `.unserialize`
+![arrows](https://mathheadinclouds.github.io/img/arrows.png)
 
 The tiny difference between `.unstringify` and `JSON.parse` has to do rather technical typing issues
 (turning Date strings into Dates, things like that)
