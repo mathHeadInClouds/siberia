@@ -15,4 +15,4 @@ And the second step being plain old JSON.stringify, turning the intermediate obj
 
 JSON.Siberia.forestify(myData)
 
-![forestify](https://mathheadinclouds.github.io/img/forestify.png)
+![forestify](https://mathheadinclouds.github.io/img/forestify2.png)
