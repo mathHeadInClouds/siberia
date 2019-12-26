@@ -16,3 +16,14 @@ And the second step being plain old JSON.stringify, turning the intermediate obj
 JSON.Siberia.forestify(myData)
 
 ![forestify](https://mathheadinclouds.github.io/img/forestify2.png)
+
+Starting with the object you wish to serialize as the root, recursively looping through the key-value pairs
+of the object, you will encouter more objects; namely, some of the values of those key-value pairs, and then,
+recursively going on in the same way. All of those objects will go into an array called `forest`. the "trees"
+(entries of the forest array) "are" (nay, "have the same information as") those encountered objects, and the
+tree at index zero "is" (nay, encodes) the root. The trees will have the same keys as the original objects,
+but the values are changed. A value, if originally an object is replaced by the non-negative integer which is
+the array index of the tree which encodes that object. And those values which are originally not objects become
+negative integers. Those, in turn, if you drop the minus sign again, are then indices into the `flatValues` array
+which is a sibling of `forest` in the result object `.forestify` has returned. `flatValues` will cluster together
+by type (string, number, etc.) details below.
