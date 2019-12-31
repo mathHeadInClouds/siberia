@@ -1,4 +1,144 @@
 (function(){
+    var reconstruct_symbol = function(symbolName){
+        return Symbol(symbolName);
+    };
+    var reconstruct_function = function(strval){
+        return eval('('+strval+')');
+    };
+    var reconstruct_RegExp = function(str){
+        return eval(str);
+    };
+    var reconstruct = {
+        _string  : null,
+        _number  : null,
+        _symbol  : reconstruct_symbol,
+        _function: reconstruct_function,
+        Boolean  : function(arg){ return new Boolean(arg); },
+        Date     : function(arg){ return new Date(arg); },
+        Number   : function(arg){ return new Number(arg); },
+        RegExp   : reconstruct_RegExp,
+        String   : function(arg){ return new String(arg); }
+    };
+    var options = {};
+    options.murder = {};
+    options.murder.functions = false;
+    options.murder.symbols   = false;
+    options.murder.RegExp    = false;
+    var stringify_replacer;
+    function compute_stringify_replacer(){
+        stringify_replacer = options.murder.RegExp
+            ? options.murder.functions
+                ? options.murder.symbols
+                    ? function(key,value){
+                        var type = typeof value;
+                        if (type==='object'){
+                            if (value.constructor===RegExp) return null;
+                            return value;
+                        }
+                        return value;
+                    } : function(key,value){
+                        var type = typeof value;
+                        if (type==='object'){
+                            if (value.constructor===RegExp) return null;
+                            return value;
+                        }
+                        if (type==='symbol'  ) return value.toString().slice(7,-1);
+                        return value;
+                    }
+                : options.murder.symbols
+                    ? function(key,value){
+                        var type = typeof value;
+                        if (type==='object'){
+                            if (value.constructor===RegExp) return null;
+                            return value;
+                        }
+                        if (type==='function') return value.toString();
+                        return value;
+                    } : function(key,value){
+                        var type = typeof value;
+                        if (type==='object'){
+                            if (value.constructor===RegExp) return null;
+                            return value;
+                        }
+                        if (type==='symbol'  ) return value.toString().slice(7,-1);
+                        if (type==='function') return value.toString();
+                        return value;
+                    }
+            : options.murder.functions
+                ? options.murder.symbols
+                    ? function(key,value){
+                        var type = typeof value;
+                        if (type==='object'){
+                            if (value.constructor===RegExp) return value.toString();
+                            return value;
+                        }
+                        return value;
+                    } : function(key,value){
+                        var type = typeof value;
+                        if (type==='object'){
+                            if (value.constructor===RegExp) return value.toString();
+                            return value;
+                        }
+                        if (type==='symbol'  ) return value.toString().slice(7,-1);
+                        return value;
+                    }
+                : options.murder.symbols
+                    ? function(key,value){
+                        var type = typeof value;
+                        if (type==='object'){
+                            if (value.constructor===RegExp) return value.toString();
+                            return value;
+                        }
+                        if (type==='function') return value.toString();
+                        return value;
+                    } : function(key,value){
+                        var type = typeof value;
+                        if (type==='object'){
+                            if (value.constructor===RegExp) return value.toString();
+                            return value;
+                        }
+                        if (type==='symbol'  ) return value.toString().slice(7,-1);
+                        if (type==='function') return value.toString();
+                        return value;
+                    }
+    }
+    var setOptions = {};
+    setOptions.murder = {};
+    setOptions.murder.functions = {};
+    setOptions.murder.symbols   = {};
+    setOptions.murder.RegExp    = {};
+    setOptions.murder.functions.true = function(){
+        options.murder.functions = true;
+        compute_stringify_replacer();
+        reconstruct._function = null;
+    }
+    setOptions.murder.functions.false = function(){
+        options.murder.functions = false;
+        compute_stringify_replacer();
+        reconstruct._function = reconstruct_function;
+    }
+    setOptions.murder.symbols.true = function(){
+        options.murder.symbols = true;
+        compute_stringify_replacer();
+        reconstruct._symbol = null;
+    }
+    setOptions.murder.symbols.false = function(){
+        options.murder.symbols = false;
+        compute_stringify_replacer();
+        reconstruct._symbol = reconstruct_symbol;
+    }
+    setOptions.murder.RegExp.true = function(){
+        options.murder.RegExp = true;
+        compute_stringify_replacer();
+        reconstruct.RegExp = null;
+    }
+    setOptions.murder.RegExp.false = function(){
+        options.murder.RegExp = false;
+        compute_stringify_replacer();
+        reconstruct.RegExp = reconstruct_RegExp;
+    }
+    var getOptions = function(){ return options; }
+    compute_stringify_replacer();
     function sortComparatorNumericalAscending(a,b){return Number(a)-Number(b);}
     var typeNames_singleton = [null, "NULL", "UNDEFINED", "TRUE", "FALSE", "NAN", "INFINITY", "MINUS_INFINITY"];
     var typeNames_regular   = ["_string", "_number", "_symbol", "_function", "Boolean", "Date", "Number", "RegExp", "String"];
@@ -47,7 +187,6 @@
     }
     function infant(value) { return Array.isArray(value) ? [] : {}; }
     function forestify(object) {
-        START = performance.now();
         var ti = typeIndex(object);
         if (ti!==0) return object;
         var result = {};
@@ -210,19 +349,8 @@
         return thawForest(forestified)[0];
     }
     function stringify(forestified){
-        return JSON.stringify(forestified);
+        return JSON.stringify(forestified, stringify_replacer);
     }
-    var reconstruct = {
-        _string: null,
-        _number: null,
-        _symbol: null,
-        _function: null,
-        Boolean: function(arg){ return new Boolean(arg); },
-        Date: function(arg){ return new Date(arg); },
-        Number: function(arg){ return new Number(arg); },
-        RegExp: function(arg){ return new RegExp(arg); },
-        String: function(arg){ return new String(arg); }
-    };
     function unstringify(string){
         var parsed         = JSON.parse(string);
         var typeSingletons = parsed.typeSingletons;
@@ -322,7 +450,9 @@
         serialize   : serialize,
         unserialize : unserialize,
         clone       : clone,
-        getKeySetsUpto: getKeySetsUpto
+        getKeySetsUpto: getKeySetsUpto,
+        setOptions  : setOptions,
+        getOptions  : getOptions
     };
     function ObjectGraphAnalysis(frozen, thawed, treeIndex, sourceObject){
         this.frozen = frozen;
