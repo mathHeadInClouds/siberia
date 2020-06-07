@@ -16,9 +16,7 @@ You can see here on the right hand side in which way we are visualizing arrays. 
 
 ![AppleEaters_IMG](https://mathheadinclouds.github.io/img/AppleEaters.png)
 
-[comment]: # (
-Here is a browser console screen shot of the code generating our data structure
-z![JoeJaneAppleOrangePear](https://mathheadinclouds.github.io/img/applesOranges.png)
+<!------ https://mathheadinclouds.github.io/img/applesOranges.png) -->
 
 Here is the JavaScript code generating our data structure
 
