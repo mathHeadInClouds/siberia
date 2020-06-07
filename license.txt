@@ -1,8 +1,33 @@
-This software is published under the Lysander Spooners Middle Finger license.
+Landru license
 
-That means, if you describe what you are doing as "upholding copyright",
-then there is absolutely no action you could possibly perform on my (=author of the software) behalf;
-i.e., whatever you are doing, you're not doing it on my behalf. Well, except, drop dead.
-Also, this software may be used by everybody without restriction. Except people who describe what they
-are doing as "upholding copyright". Those are not allowed to use the software. And if you ever sued someone
-for "copyright violation", you're not allowed to use the software.
+Please do not use this software - nobody should use it.
+
+Image all this copying of code (of honor, of conduct, of computer) - all this "going with the herd" - would halt.
+
+Imagine people thinking for themselves, being individuals, like actual humans do; not being dull, boring,
+average-in-every-aspect, grey, spineless, sexless, rootless, spiritless, obedient "I didn't do it" zombies any more.
+
+It sure is comfortable to be a docile cloned half corpse, but why do _you_ want to go that way? Don't do this to yourself.
+You can write this software by yourself. I know you can. Do it! Takes time you say? Then *take* the time.
+*Rob* the time, don't say "may I". If you write it yourself, you grow, and if you copy it, you shrink. Much like
+growing new skin, versus scraping off some skin to make an ultra-tight hat fit. Have you not shrunken enough? Is
+there anything left of _you_? Hello? Anybody in there?
+
+In case you decide to not follow above advice, and you use this software anyway, please include this notice.
+
+And if you decide not to follow the foregoing request, and don't include this notice, that's OK. Maybe it's better that way.
+Because, I have a hunch this notice might act like the "smoking kills" labels - the way opposite to what's purported.
+("I read that beautiful warning message, and still I'm copying - I really must (be stupid || love being uncreative || ...)")
+
+In that case, please have a beer on me, and have a laugh while choosing any of the available "standard" licences at random,
+using the uniform distribution. Or just go with any formally correct version of: "I am allowed to use this code, but you
+aren't - na-na-na-na-naaaa-naaa". Actually, yeah, I think that's best. But do what _you_ think is best in that regard, OK?
+
+Implied and express warranties: I gurantee that copying code instead of writing it yourself makes you more stupid.
+That's all I guarantee. Except that, on the short run, being more stupid makes you more happy. That's why I recommend
+copying so highly.
+
+TLDR: If you're so used to being told what to do that "do what you think is best" is unintelligible gibberish to you,
+then just follow the will of Landru**.
+
+**I think they call it "best practices" nowadays.
