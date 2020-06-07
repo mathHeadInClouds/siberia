@@ -20,18 +20,19 @@
         String   : function(arg){ return new String(arg); }
     };
     var options = {};
-    options.murder = {};
-    options.murder.functions = false;
-    options.murder.symbols   = false;
-    options.murder.RegExp    = false;
+    options.nullify = {};
+    options.nullify.functions = false;
+    options.nullify.symbols   = false;
+    options.nullify.RegExp    = false;
     var stringify_replacer;
     function compute_stringify_replacer(){
-        stringify_replacer = options.murder.RegExp
-            ? options.murder.functions
-                ? options.murder.symbols
+        stringify_replacer = options.nullify.RegExp
+            ? options.nullify.functions
+                ? options.nullify.symbols
                     ? function(key,value){
                         var type = typeof value;
                         if (type==='object'){
+                            if (value===null) return null;
                             if (value.constructor===RegExp) return null;
                             return value;
                         }
@@ -39,16 +40,18 @@
                     } : function(key,value){
                         var type = typeof value;
                         if (type==='object'){
+                            if (value===null) return null;
                             if (value.constructor===RegExp) return null;
                             return value;
                         }
                         if (type==='symbol'  ) return value.toString().slice(7,-1);
                         return value;
                     }
-                : options.murder.symbols
+                : options.nullify.symbols
                     ? function(key,value){
                         var type = typeof value;
                         if (type==='object'){
+                            if (value===null) return null;
                             if (value.constructor===RegExp) return null;
                             return value;
                         }
@@ -57,6 +60,7 @@
                     } : function(key,value){
                         var type = typeof value;
                         if (type==='object'){
+                            if (value===null) return null;
                             if (value.constructor===RegExp) return null;
                             return value;
                         }
@@ -64,11 +68,12 @@
                         if (type==='function') return value.toString();
                         return value;
                     }
-            : options.murder.functions
-                ? options.murder.symbols
+            : options.nullify.functions
+                ? options.nullify.symbols
                     ? function(key,value){
                         var type = typeof value;
                         if (type==='object'){
+                            if (value===null) return null;
                             if (value.constructor===RegExp) return value.toString();
                             return value;
                         }
@@ -76,16 +81,18 @@
                     } : function(key,value){
                         var type = typeof value;
                         if (type==='object'){
+                            if (value===null) return null;
                             if (value.constructor===RegExp) return value.toString();
                             return value;
                         }
                         if (type==='symbol'  ) return value.toString().slice(7,-1);
                         return value;
                     }
-                : options.murder.symbols
+                : options.nullify.symbols
                     ? function(key,value){
                         var type = typeof value;
                         if (type==='object'){
+                            if (value===null) return null;
                             if (value.constructor===RegExp) return value.toString();
                             return value;
                         }
@@ -94,6 +101,7 @@
                     } : function(key,value){
                         var type = typeof value;
                         if (type==='object'){
+                            if (value===null) return null;
                             if (value.constructor===RegExp) return value.toString();
                             return value;
                         }
@@ -103,37 +111,37 @@
                     }
     }
     var setOptions = {};
-    setOptions.murder = {};
-    setOptions.murder.functions = {};
-    setOptions.murder.symbols   = {};
-    setOptions.murder.RegExp    = {};
-    setOptions.murder.functions.true = function(){
-        options.murder.functions = true;
+    setOptions.nullify = {};
+    setOptions.nullify.functions = {};
+    setOptions.nullify.symbols   = {};
+    setOptions.nullify.RegExp    = {};
+    setOptions.nullify.functions.true = function(){
+        options.nullify.functions = true;
         compute_stringify_replacer();
         reconstruct._function = null;
     }
-    setOptions.murder.functions.false = function(){
-        options.murder.functions = false;
+    setOptions.nullify.functions.false = function(){
+        options.nullify.functions = false;
         compute_stringify_replacer();
         reconstruct._function = reconstruct_function;
     }
-    setOptions.murder.symbols.true = function(){
-        options.murder.symbols = true;
+    setOptions.nullify.symbols.true = function(){
+        options.nullify.symbols = true;
         compute_stringify_replacer();
         reconstruct._symbol = null;
     }
-    setOptions.murder.symbols.false = function(){
-        options.murder.symbols = false;
+    setOptions.nullify.symbols.false = function(){
+        options.nullify.symbols = false;
         compute_stringify_replacer();
         reconstruct._symbol = reconstruct_symbol;
     }
-    setOptions.murder.RegExp.true = function(){
-        options.murder.RegExp = true;
+    setOptions.nullify.RegExp.true = function(){
+        options.nullify.RegExp = true;
         compute_stringify_replacer();
         reconstruct.RegExp = null;
     }
-    setOptions.murder.RegExp.false = function(){
-        options.murder.RegExp = false;
+    setOptions.nullify.RegExp.false = function(){
+        options.nullify.RegExp = false;
         compute_stringify_replacer();
         reconstruct.RegExp = reconstruct_RegExp;
     }
