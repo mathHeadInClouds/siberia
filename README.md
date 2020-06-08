@@ -211,6 +211,10 @@ JSON.Siberia.setOptions.nullify.functions.false()  // function serialized to nul
 
 There is some support (work in progress) for the usage in visualizing cyclical data structures. Calling `.forestify` multiple times for several objects which are "connected" (hence have the same object graph, only with a different root) is not enough; there must be a forestified data structure which is shared between those various nodes, such that you can do a "root switch". The readme will describe this part in more detail once the code is more stable.  Use `.analyzeObjectGraph` at your own risk (maybe better not quite yet). To be on the safe side, just use the 6 methods in the above black box, plus the `.clone` method.
 
+manually adding custom "quasi atomic objects"
+
+tutorial "movie" or slides, walking through the steps of the algorithm, with our example data structure.
+
 ### todo - maybe later, maybe never
 
 serializing functions depending on variables in closures
@@ -221,6 +225,7 @@ DOM objects??
 
 language-specific objects in non-JavaScript languages. Consistent system to construct an "obvious human readable" standard. If that can't be done, don't do DOM objects.
 
+<!---
 ### links
-
-* [tutarial](https://mathheadinclouds.github.io/testsiberia/) - based on above example data structure, walking through the step of the algorithm
+* [tutarial](https://mathheadinclouds.github.io/testsiberia/) - speed tests, tutorial movie, html version of readme
+-->
