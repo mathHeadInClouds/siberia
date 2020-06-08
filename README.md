@@ -209,7 +209,7 @@ JSON.Siberia.setOptions.nullify.functions.false()  // function serialized to nul
 
 ### todo - soon
 
-There is some support (work in progress) for the usage in visualizing cyclical data structures. Calling `.forestify` multiple times for several objects which are "connected" (hence have the same object graph, only with a different root) is not enough; there must be a forestified data structure which is shared between those various nodes, such that you can do a "root switch". The readme will describe this part in more detail once the code is more stable.  Use `.analyzeObjectGraph` at your own risk (maybe better not quite yet). To be on the safe side, just use the 6 methods in the above black box, plus the `.clone` method.
+There is some support (work in progress) for the usage in visualizing cyclical data structures. Calling `.forestify` multiple times for several objects which are "connected" (hence have the same object graph, only with a different root) is not good enough; there must be a forestified data structure which is shared between those various nodes, such that you can do a "root switch". The readme will describe this part in more detail once the code is more stable.  Use `.analyzeObjectGraph` at your own risk (maybe better not quite yet). To be on the safe side, just use the 6 methods in the above black box, plus the `.clone` method.
 
 manually adding custom "quasi atomic objects"
 
