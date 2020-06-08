@@ -177,7 +177,7 @@ siberianClone = JSON.Siberia.unforestify(unstr);
 // result : [/d+/g, NaN, null, 2020]
 ```
 
-`JSON.Siberia.stringify` is almost the same as `JSON.stringify`, and `JSON.Siberia.unstringify` is almost the same as JSON.parse. The difference is `JSON.Siberia.stringify` expects the argument object to be (like) a result of calling `JSON.Siberia.forestify`, and will use the type information appropriately. For example, for a `RegExp` object, the `.toString` method is called to properly turn the object into a string. Similarly, `JSON.Siberia.unstringify` expects the argument string to have the appropriate format and, again, uses the type information to appropriately; for example, for a stringified `RegExp` object, `eval` is called on the string, so the string is turned into a `RegExp` again. 
+`JSON.Siberia.stringify` is almost the same as `JSON.stringify`, and `JSON.Siberia.unstringify` is almost the same as JSON.parse. The difference is `JSON.Siberia.stringify` expects the argument object to be (like) a result of calling `JSON.Siberia.forestify`, and will use the type information appropriately. For example, for a `RegExp` object, the `.toString` method is called to properly turn the object into a string. Similarly, `JSON.Siberia.unstringify` expects the argument string to have the appropriate format and, again, uses the type information appropriately; for example, for a stringified `RegExp` object, `eval` is called on the string, so the string is turned into a `RegExp` again. 
 
 ![arrows_IMG](https://mathheadinclouds.github.io/img/arrows.png)
 
