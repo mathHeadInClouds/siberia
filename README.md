@@ -101,6 +101,34 @@ And since the trees of the forest are frozen, "siberia" was chosen as the name o
 
 The reverse process (`unforestify` aka retrocycle) in even more straightforward: First, for each tree in the forest, generate either an empty array, or an empty plain object. Then, in a double loop over trees of the forest, and keys of the tree, do an obvious assignment, the right hand side of which is a "thawed" tree in the thawed forest we're just constructing, or a atom fetched from the atmoics table.
 
+
+```javascript
+    function thawForest(forestified) {
+        var thawedObjects = [];
+        var objectsTable = forestified.objectsTable;
+        var atomsTable = forestified.atomsTable;
+        var i, entry, thawed, keys, j, key, frozVal;
+        for (i=0; i<objectsTable.length; i++){
+            entry = objectsTable[i];
+            thawedObjects[i] = Array.isArray(entry) ? [] : {};
+        }
+        for (i=0; i<objectsTable.length; i++){
+            entry = objectsTable[i];
+            thawed = thawedObjects[i];
+            keys = Object.keys(entry);
+            for (j=0; j<keys.length; j++){
+                key = keys[j];
+                frozVal = entry[key];
+                thawed[key] = (frozVal>=0) ? thawedObjects[frozVal] : atomsTable[-frozVal];
+            }
+        }
+        return thawedObjects;
+    };
+    function unforestify(forestified){ return thawForest(forestified)[0]; }
+```
+
+Above simplified versions of `forestify` and `unforestify` you can find in file siberiaUntyped.js (below 100 lines of code), which is not used, but provided for easier learning. Main differences between the simplified version and the real version are, first, atom typing, and second, the real version has non-recursive version of forsetify (little hard to read, admittedly), in order to prevent a stack overflow error you otherwise would get when you're dealing with extremely large objects (such as linked list with 100,000 nodes.)
+
 ### Douglas Crockford
 
 **Why siberia is faster than Douglas Crockford's decycle.js (2018 version), by an unbounded factor**: First, a similarity. Above `discover` function is similar to the function `derez`, which occurs inside of `.decycle`. Just as `discover`, `derez` is essentially depth first search with an additional stop condition if a previously encountered object is encountered once again, and in both cases, ES6 feature `WeakMap` is used to generate a lookup table of known objects. In both cases, the domain of the `WeakMap` consists of the nodes of the object graph (i.e., objects discovered so far.) But those objects are mapped to different things in `discover` vs `derez`. In `discover`, it's the object index, and in `derez` it's the path from the root to the object. That path is JavaScript code, which is later fed to `eval`, when we deserialize again.
@@ -129,6 +157,8 @@ The difference: Storing the the path takes up space which is linear in the numbe
 On top of that, `eval` and regular expressions are used, which can be slow (especially the latter), further degrading runtime performance. (This being by far not as bad as the other problem.)
 
 ### implementation
+
+rest of the readme referst to slightly outdated version (work in currect progress (July 2020))
 
 For our example data structure,
 
