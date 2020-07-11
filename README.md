@@ -158,7 +158,7 @@ On top of that, `eval` and regular expressions are used, which can be slow (espe
 
 ### implementation
 
-rest of the readme refers to slightly outdated version (work in currect progress (July 2020))
+rest of the readme refers to slightly outdated version (work in current progress (July 2020))
 
 For our example data structure,
 
@@ -190,6 +190,8 @@ forestified = JSON.Siberia.forestify(obj);
 
 It should be obvious how `types` works. For example `atoms[4],atoms[5],atoms[6],atoms[7]` are all Dates, because `types[2]` says that Dates start (inclusive) at index 4, and `types[3]` says that they end (exclusive) at index 8.
 
+Of course this readme should say which types there are. Well for now, just try it out (because it's work in progress (July 2020)...)
+
 Thanks to the type information, with siberia, first serializing and then deserializing are much closer to emulating "true cloning" than doing the same with plain JSON. (siberia isn't perfect either; functions with variables depending on closures won't work properly, to give one example).
 
 ```javascript
@@ -201,53 +203,34 @@ siberianClone = JSON.Siberia.unforestify(unstr);
 // result : [/d+/g, NaN, null, 2000]
 ```
 
-`JSON.Siberia.stringify` is almost the same as `JSON.stringify`, and `JSON.Siberia.unstringify` is almost the same as JSON.parse. The difference is `JSON.Siberia.stringify` expects the argument object to be (like) a result of calling `JSON.Siberia.forestify`, and will use the type information appropriately. For example, for a `RegExp` object, the `.toString` method is called to properly turn the object into a string. Similarly, `JSON.Siberia.unstringify` expects the argument string to have the appropriate format and, again, uses the type information appropriately; for example, for a stringified `RegExp` object, `eval` is called on the string, so the string is turned into a `RegExp` again. 
+`JSON.Siberia.stringify` is almost the same as `JSON.stringify`, and `JSON.Siberia.unstringify` is almost the same as JSON.parse. The difference is `JSON.Siberia.stringify` expects the argument object to be (like) a result of calling `JSON.Siberia.forestify`, and will use the type information appropriately. For example, for a `RegExp` object, the `.toString` method is called to properly turn the object into a string. Similarly, `JSON.Siberia.unstringify` expects the argument string to have the appropriate format and, again, uses the type information appropriately; for example, for a stringified `RegExp` object, `eval` is called on the string, so the string is turned into a `RegExp` again. (update: rewritten to not use eval, for security reasons.)
 
 ![arrows_IMG](https://mathheadinclouds.github.io/img/arrows.png)
 
-`forestify` and `unforestify` are the equivalents of what in Douglas Crockfords version is called `decycle` and `retrocycle` - meaning, turning an arbitrary object into another object which doesn't have any cycles, and reversing this process, respectively. Those are the first step in freezing, and the second step in thawing, respectively. The second step in freezing and the first step in thawing (dealing with strings) were discussed in the preceding paragraph. Doing the two steps at once is called `.serialize` and `.unserialize`, as the black diagram shows. Furthermore, Doing the round trip (`.forestify`, then `.unforestify`) is called `.clone`.
+`forestify` and `unforestify` are the equivalents of what in Douglas Crockfords version is called `decycle` and `retrocycle` - meaning, turning an arbitrary object into another object which doesn't have any cycles, and reversing this process, respectively. Those are the first step in freezing, and the second step in thawing, respectively. The second step in freezing and the first step in thawing (dealing with strings) were discussed in the preceding paragraph. Doing the two steps at once is called `.serialize` and `.unserialize`, as the black diagram shows. Furthermore, Doing the round trip (`.forestify`, then `.unforestify`) is called `.clone`, and
+doing the 'big roundtrip' (object to string and back) is called `.CLONE`.
 
 ```javascript
 inferiorClone = JSON.parse(JSON.stringify(obj))
-[inferiorClone.re, inferiorClone.computahEsplode, inferiorClone.emperorsGarments, typeof inferiorClone.now]
+[inferiorClone.re, inferiorClone.n.computahEsplode, inferiorClone.n.emperorsGarments, typeof inferiorClone.y2ks[0]]
 // result: [{}, null, null, "string"]
 ```
 
-Note that the serialization result is "self contained", and thus suitable for communication from JavaScript to non-JavaScript. A, say, Python programmer does not have to read some JavaScript spec to interpret a siberian serialization result - it is human readable *without* a spec, that is important. It would be a bad idea to move some information from the serialized string "to the spec" (such as NaN is 5), in order to save a couple of bytes. The string should have an obvious interpretation. So it does, I'd say - If you see how it can be even more obvious, tell me.
+Note that the serialization result is "self contained", and thus suitable for communication from JavaScript to non-JavaScript. A, say, Python programmer does not have to read some JavaScript spec to interpret a siberian serialization result - it is human readable *without* a spec, that is important. It would be a bad idea to move some information from the serialized string "to the spec", in order to save a couple of bytes. The string should have an obvious interpretation. So it does, I'd say - If you see how it can be even more obvious, tell me.
 
-### options
+### todo
 
-```javascript
-JSON.Siberia.getOptions().nullify
-// result: {functions: false, symbols: false, RegExp: false}
-```
+functions and symbols
 
-nullify is the only thing that has options in this version. Here, you can decide if functions, Symbols, and regular expressions should be turned into nulls (as functions and Symbols are by `JSON.stringify`), or if they should be stringified.
+serializing constructor/prototype information
 
-You change options like this: 
+unserializing into object with correct/original prototype, if that wasn't [] or {}.
 
-```javascript
-JSON.Siberia.setOptions.nullify.functions.true()   // function serialized to string
-JSON.Siberia.setOptions.nullify.functions.false()  // function serialized to null
-```
+DOM objects and miscellaneous JS builtin objects
 
-### todo - soon
-
-There is some support (work in progress) for the usage in visualizing cyclical data structures. Calling `.forestify` multiple times for several objects which are "connected" (hence have the same object graph, only with a different root) is not good enough; there must be a forestified data structure which is shared between those various nodes, such that you can do a "root switch". The readme will describe this part in more detail once the code is more stable.  Use `.analyzeObjectGraph` at your own risk (maybe better not quite yet). To be on the safe side, just use the 6 methods in the above black box, plus the `.clone` method.
-
-manually adding custom "quasi atomic objects"
+"spec" (or high quality rant) of what types there should be, if used in languages other than JS.
 
 tutorial "movie" or slides, walking through the steps of the algorithm, with our example data structure.
-
-### todo - maybe later, maybe never
-
-serializing functions depending on variables in closures
-
-supporting constructors other than Array, plain object.
-
-DOM objects??
-
-language-specific objects in non-JavaScript languages. Consistent system to construct an "obvious human readable" standard. If that can't be done, don't do DOM objects.
 
 <!---
 ### links
