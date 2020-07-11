@@ -158,7 +158,7 @@ On top of that, `eval` and regular expressions are used, which can be slow (espe
 
 ### implementation
 
-rest of the readme referst to slightly outdated version (work in currect progress (July 2020))
+rest of the readme refers to slightly outdated version (work in currect progress (July 2020))
 
 For our example data structure,
 
@@ -168,33 +168,27 @@ JSON.Siberia.forestify(myData)
 
 gives
 
-![JsonSiberiaForestifyMyData_IMG](https://mathheadinclouds.github.io/img/JsonSiberiaForestifyMyData.png)
+![JsonSiberiaForestifyMyData_IMG](https://mathheadinclouds.github.io/img/forestifyMyData.png)
 
-`.forest` is the objects table, and `.flatValues` is the atomics table (as described in the algorithm section). `.typeRegular` and `.typeSingletons` are better explained when the atomics will have more than one type. Let's look at an example.
+`.forest` is the objects table, and `.atoms` is the atomics table (as described in the algorithm section). `.types` in better explained when we're dealing with atoms of more than one type. Let's look at an example.
 
 ```javascript
-obj = {
+var millisecondsPerDay = 24*60*60*1000;
+var y2k = new Date((23*365+7*366)*millisecondsPerDay);
+var yesterday = new Date(new Date()-millisecondsPerDay);
+var tomorrow = new Date((new Date()-0)+millisecondsPerDay);
+var obj = {
     re : /d+/g,
-    now : new Date(),
-    yesterday: new Date(new Date()-24*60*60*1000),
-    tomorrow: new Date((new Date()-0)+24*60*60*1000),
-    almostEvil : 665.9,
-    computahEsplode : Math.sqrt(-1),
-    emperorsGarments : null
+    t: [yesterday, tomorrow],
+    y2ks : [y2k, y2k, new Date(y2k)],
+    n: {almostEvil : 665.9, computahEsplode : Math.sqrt(-1), emperorsGarments : null}
 }
 forestified = JSON.Siberia.forestify(obj);
 ```
 
-![forestifiedAtomicPlethora_IMG](https://mathheadinclouds.github.io/img/forestifiedAtomicPlethora.png)
+![forestifiedAtomicPlethora_IMG](https://mathheadinclouds.github.io/img/forestifiedWithTypes.png)
 
-`forestified.typeRegular` tells us that the array `forestified.flatValues` has numbers from 6 inclusive to 7 exclusive, Date objects from 7 inclusive to 10 exclusive, and RegExp objects from 10 inclusive til the end. That means, the flatValues array is grouped by type (or, to be more exact, by constructor), and typeRegular array tells us which types are found in which section of the array. `forestified.typeSingletons` is similar to `forestified.typeRegular`, except that the corresponding "type" has only one possible value. The 7 supported (values of) singleton types are
-
-```javascript
-[null, undefined, true, false, NaN, Infinity, -Infinity]
-// 1      2        3      4     5       6         7
-```
-
-And the singletons are always (if they occur at all) at the same index (e.g., Infinity is always at position 6, if it occurs in the flatValues array at all.) If not all singletons occur, the "regular" types will start earlier. Gaps (unused slots) in the flatValues array can only occur from 1 to 7 (and there is always a gap at zero.)
+It should be obvious how `types` works. For example `atoms[4],atoms[5],atoms[6],atoms[7]` are all Dates, because `types[2]` says that Dates start (inclusive) at index 4, and `types[3]` says that they end (exclusive) at index 8.
 
 Thanks to the type information, with siberia, first serializing and then deserializing are much closer to emulating "true cloning" than doing the same with plain JSON. (siberia isn't perfect either; functions with variables depending on closures won't work properly, to give one example).
 
@@ -203,8 +197,8 @@ forestified = JSON.Siberia.forestify(obj);
 stringified = JSON.Siberia.stringify(forestified);
 unstr = JSON.Siberia.unstringify(stringified);
 siberianClone = JSON.Siberia.unforestify(unstr);
-[siberianClone.re, siberianClone.computahEsplode, siberianClone.emperorsGarments, siberianClone.now.getFullYear()]
-// result : [/d+/g, NaN, null, 2020]
+[siberianClone.re, siberianClone.n.computahEsplode, siberianClone.n.emperorsGarments, siberianClone.y2ks[0].getFullYear()]
+// result : [/d+/g, NaN, null, 2000]
 ```
 
 `JSON.Siberia.stringify` is almost the same as `JSON.stringify`, and `JSON.Siberia.unstringify` is almost the same as JSON.parse. The difference is `JSON.Siberia.stringify` expects the argument object to be (like) a result of calling `JSON.Siberia.forestify`, and will use the type information appropriately. For example, for a `RegExp` object, the `.toString` method is called to properly turn the object into a string. Similarly, `JSON.Siberia.unstringify` expects the argument string to have the appropriate format and, again, uses the type information appropriately; for example, for a stringified `RegExp` object, `eval` is called on the string, so the string is turned into a `RegExp` again. 
