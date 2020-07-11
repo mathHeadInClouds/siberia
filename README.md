@@ -170,7 +170,7 @@ gives
 
 ![JsonSiberiaForestifyMyData_IMG](https://mathheadinclouds.github.io/img/forestifyMyData.png)
 
-`.forest` is the objects table, and `.atoms` is the atomics table (as described in the algorithm section). `.types` in better explained when we're dealing with atoms of more than one type. Let's look at an example.
+`.forest` is the objects table, and `.atoms` is the atomics table (as described in the algorithm section). `.types` is better explained when we're dealing with atoms of more than one type. Let's look at an example.
 
 ```javascript
 var millisecondsPerDay = 24*60*60*1000;
@@ -232,7 +232,6 @@ DOM objects and miscellaneous JS builtin objects
 
 tutorial "movie" or slides, walking through the steps of the algorithm, with our example data structure.
 
-<!---
+
 ### links
-* [tutarial](https://mathheadinclouds.github.io/testsiberia/) - speed tests, tutorial movie, html version of readme
--->
+* [speed test](https://mathheadinclouds.github.io/testsiberia/) - speed test
