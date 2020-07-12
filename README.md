@@ -80,8 +80,8 @@ function forestify_aka_decycle(root){
                 }
             } else {
                 if (!(val in atomics)){
-	                ++atomicCounter;                 // atoms table new entry
-	                atomics[val] = atomicCounter;
+                    ++atomicCounter;                 // atoms table new entry
+                    atomics[val] = atomicCounter;
             	}
             	forest[currentIdx][key] = -atomics[val];      // rhs negative
             }
