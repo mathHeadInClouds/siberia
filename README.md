@@ -194,6 +194,17 @@ It should be obvious how `types` works. For example `atoms[4],atoms[5],atoms[6],
 
 Of course this readme should say which types there are. Well for now, just try it out (because it's work in progress (July 2020)...)
 
+List of types on July 12th, 2020: 
+
+```javascript
+[
+    'singleton_null', 'singleton_undefined', 'singleton_true', 'singleton_false',
+    'string', 'number', 'function', 'symbol', 'Date', 'RegExp', 'Native'
+];
+```
+
+You might wonder why there are no singletons for plus and minus Infinity, and for `NaN`. Well, numbers are stored as (stringified to) strings, and when unstringifying, the function `x => +x` is applied. This way, the singletons are not needed. Also, if, say, ES7 were to add support for complex numbers, and `x=> x+''` and `x => +x` are inverses of each other not just for floats but also for complex numbers, well, then siberia doesn't need to be rewritten. So despite this using a couple of bytes more, this is on purpose.
+
 Thanks to the type information, with siberia, first serializing and then deserializing are much closer to emulating "true cloning" than doing the same with plain JSON. (siberia isn't perfect either; functions with variables depending on closures won't work properly, to give one example).
 
 ```javascript
@@ -222,17 +233,29 @@ Note that the serialization result is "self contained", and thus suitable for co
 
 ### todo
 
-functions and symbols
-
-serializing constructor/prototype information
-
+* serializing constructor/prototype information
 unserializing into object with correct/original prototype, if that wasn't [] or {}.
 
-DOM objects and miscellaneous JS builtin objects
+(caution: following section is half baked brainstorming)
+just as `types` are the types of the atoms, new feature `constructors` are the "types" of the forest.
+Probably best to reorder the forest so that we can again work with `startIndex`, as we did with the types/atoms.
+Not clear if only name of constructor should be stored, or if `toString()` should be stored.
+If only name is stored, then the constructor function(s) must be given as an extra argument(s) when we un-forestify.
+If `.toString()` is stored, we can use that string. Probably not a good idea to store the string. For one, it's not "data",
+so potentially a waste of space; also, might want constructor functions which are returned by a function and depend on closures,
+and that would not work with the `.toString()` thing. Too complicated wanting to check if that is the case. So better, from the outset,
+just store the name and demand constructor function as extra arguments when doing unforestify.
 
-"spec" (or high quality rant) of what types there should be, if used in languages other than JS.
+Then, it's probably best to use `Object.setPrototypeOf(thawedObject)`. If we were to use the "right" constructors right away,
+we'd have to know too much about the ordering in which the constructor calls would have to take place, which is potentially
+a lot of work in that can of worms! Hence the `.setPrototypeOf` thing, so we can just do the usual currently implemented thawing,
+and do a "prototype correction" in a second step.
 
-tutorial "movie" or slides, walking through the steps of the algorithm, with our example data structure.
+* DOM objects and miscellaneous JS builtin objects
+
+* "spec" (or high quality rant) of what types there should be, if used in languages other than JS.
+
+* tutorial "movie" or slides, walking through the steps of the algorithm, with our example data structure.
 
 
 ### links
