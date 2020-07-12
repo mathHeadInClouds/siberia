@@ -9,7 +9,7 @@
         }
         return arr[arr.length-1];
     }
-    var TYPE_NAMES = ['singleton_null', 'singleton_undefined', 'singleton_true', 'singleton_false','string', 'number', 'Date', 'RegExp', 'Native'];
+    var TYPE_NAMES = ['singleton_null', 'singleton_undefined', 'singleton_true', 'singleton_false','string', 'number', 'function', 'Date', 'RegExp', 'Native'];
     var TYPE_IDX = {};
     var T = {};
     var IS_SINGLETON = {};
@@ -18,7 +18,7 @@
         TYPE_IDX[typeName] = idx;
         T[typeName] = typeName;
         IS_SINGLETON[typeName] = typeName.slice(0,10)==='singleton_';
-        IS_OBJECT[typeName] = typeName in {Date: null, RegExp: null, Native: null}
+        IS_OBJECT[typeName] = typeName in {Date: null, RegExp: null, Native: null, function: null};
     });
     function TYPE_OF(item){
         var f = {
@@ -37,7 +37,7 @@
             'undefined': function(){ return T.singleton_undefined; },
             'string'   : function(){ return T.string; },
             'number'   : function(){ return T.number; },
-            'function' : function(){ throw new Error('todo'); },
+            'function' : function(){ return T.function;  },
             'symbol'   : function(){ throw new Error('todo'); },
             'boolean': function(){
                 if (item===true) return T.singleton_true;
@@ -66,7 +66,7 @@
         var objects = [], inverseObjects = new WeakMap(), forest = [];
         var atomBuckets = {}, counter = 0, atoms = [];
         var tos, aKeys_sing, aKeys_obj, aKeys, oKeys, oKeysIdx, new_object, ty;
-        function discover_RECURSIVE(obj){ // eanier to read version which, unfortunately, will generate stack overflow if used on extremely large objects - UNUSED
+        function discover_RECURSIVE(obj){ // easier to read version which, unfortunately, will generate stack overflow if used on extremely large objects - UNUSED
             var currentIdx = objects.length;
             inverseObjects.set(obj, currentIdx);
             objects.push(obj);
@@ -313,7 +313,8 @@
             number : str,
             Date   : tostr,
             RegExp : tostr,
-            Native : native
+            Native : native,
+            function: function(){ return null; }
         };
         var atoms = forestified.atoms;
         var forest = forestified.forest;
@@ -346,6 +347,7 @@
     function unstringify(string){
         function identity(x){ return x; }
         function plus(x) { return +x; }
+        function return_null(){ return null; }
         function regExpFromString(str){
             if ((typeof str)!=='string') return null;
             if (str.length<2) return null;
@@ -362,11 +364,12 @@
             ,singleton_false     : function(){ return false; }
         };
         var notSing = {
-            string : identity,
-            number : plus,
-            Date   : function(dateStr){ return new Date(dateStr); },
-            RegExp : regExpFromString,
-            Native : function(){ return null; }
+            string  : identity,
+            number  : plus,
+            Date    : function(dateStr){ return new Date(dateStr); },
+            RegExp  : regExpFromString,
+            Native  : return_null,
+            function: return_null
         };
         var parsed = JSON.parse(string);
         var _atoms = parsed.atoms;
@@ -391,6 +394,9 @@
                 }
             }
         }
+        if (types.filter(function(typeDescription){ return typeDescription.name==='function'}).length>=0){
+            console.warn('please note: stringify/unstringify destroys functions');
+        }
         return {
             atoms  : atoms,
             forest : forest,
@@ -410,7 +416,7 @@
     function CLONE(object){
         return unserialize(serialize(object));
     }
-    function deepEqual_recursive(firstItem, secondItem){ // eanier to read version which, unfortunately, will generate stack overflow if used on extremely large objects - UNUSED
+    function deepEqual_recursive(firstItem, secondItem){ // easier to read version which, unfortunately, will generate stack overflow if used on extremely large objects - UNUSED
         function equal(item1, item2, cb){
             var type1 = typeof item1;
             var type2 = typeof item2;
