@@ -59,7 +59,7 @@ And the atoms table
 
 For example, the frozen version of the pear object (which has `.name = "Pear"` and `.likedBy` = *array containing Jane*) is the object `{name: -4, likedBy: 9}`, because the atoms table has string "Pear" in slot 4, and the objects table has an array containing Jane in slot 9.
 
-A slightly simplified version of the serialization algorithm (namely, one which does everything except deal with typing the atoms; especially, it will work for our example data structure) has only 32 lines of code, here it is:
+A slightly simplified version of the serialization algorithm (namely, one which does everything except deal with typing the atoms; especially, it will work for our example data structure) has just 34 lines of code, here it is:
 
 ```javascript
 function forestify_aka_decycle(root){
@@ -89,10 +89,12 @@ function forestify_aka_decycle(root){
 	    return currentIdx;
 	}
 	discover(root);
-	return {
-		objectsTable: forest,
-		atomsTable  : [null].concat(Object.keys(atomics))
-	};
+    var atomsTable = [];
+    Object.keys(atomics).forEach(function(k){ atomsTable[atomics[k]] = k; });
+    return {
+        objectsTable: forest,
+        atomsTable  : atomsTable
+    };
 }
 ```
 
