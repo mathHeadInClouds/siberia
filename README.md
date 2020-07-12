@@ -129,7 +129,7 @@ The reverse process (`unforestify` aka retrocycle) in even more straightforward:
     function unforestify(forestified){ return thawForest(forestified)[0]; }
 ```
 
-Above simplified versions of `forestify` and `unforestify` you can find in file siberiaUntyped.js (below 100 lines of code), which is not used, but provided for easier learning. Main differences between the simplified version and the real version are, first, atom typing, and second, the real version has non-recursive version of forsetify (little hard to read, admittedly), in order to prevent a stack overflow error you otherwise would get when you're dealing with extremely large objects (such as linked list with 100,000 nodes.)
+Above simplified versions of `forestify` and `unforestify` you can find in file siberiaUntyped.js (below 100 lines of code), which is not used, but provided for easier learning. Main differences between the simplified version and the real version are, first, atom typing, and second, the real version has non-recursive version of forestify (little hard to read, admittedly), in order to prevent a stack overflow error you otherwise would get when you're dealing with extremely large objects (such as linked list with 100,000 nodes.)
 
 ### Douglas Crockford
 
