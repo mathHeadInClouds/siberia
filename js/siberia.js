@@ -9,16 +9,21 @@
         }
         return arr[arr.length-1];
     }
-    var TYPE_NAMES = ['singleton_null', 'singleton_undefined', 'singleton_true', 'singleton_false','string', 'number', 'function', 'Date', 'RegExp', 'Native'];
+    var TYPE_NAMES = [
+        'singleton_null', 'singleton_undefined', 'singleton_true', 'singleton_false',
+        'string', 'number', 'function', 'symbol', 'Date', 'RegExp', 'Native'
+    ];
     var TYPE_IDX = {};
     var T = {};
     var IS_SINGLETON = {};
     var IS_OBJECT = {};
+    var IS_SYMBOL = {};
     TYPE_NAMES.forEach(function(typeName, idx){
         TYPE_IDX[typeName] = idx;
         T[typeName] = typeName;
         IS_SINGLETON[typeName] = typeName.slice(0,10)==='singleton_';
         IS_OBJECT[typeName] = typeName in {Date: null, RegExp: null, Native: null, function: null};
+        IS_SYMBOL[typeName] = (typeName==='symbol');
     });
     function TYPE_OF(item){
         var f = {
@@ -38,7 +43,7 @@
             'string'   : function(){ return T.string; },
             'number'   : function(){ return T.number; },
             'function' : function(){ return T.function;  },
-            'symbol'   : function(){ throw new Error('todo'); },
+            'symbol'   : function(){ return T.symbol; },
             'boolean': function(){
                 if (item===true) return T.singleton_true;
                 if (item===false) return T.singleton_false;
@@ -65,7 +70,7 @@
         var oKeys_idx_stack = [];
         var objects = [], inverseObjects = new WeakMap(), forest = [];
         var atomBuckets = {}, counter = 0, atoms = [];
-        var tos, aKeys_sing, aKeys_obj, aKeys, oKeys, oKeysIdx, new_object, ty;
+        var tos, aKeys_sing, aKeys_obj, aKeys_symb, aKeys, oKeys, oKeysIdx, new_object, ty;
         function discover_RECURSIVE(obj){ // easier to read version which, unfortunately, will generate stack overflow if used on extremely large objects - UNUSED
             var currentIdx = objects.length;
             inverseObjects.set(obj, currentIdx);
@@ -75,6 +80,7 @@
             for (var i=0; i<keys.length; i++){
                 var key = keys[i], val = obj[key], type = TYPE_OF(val);
                 if (type){
+                    console.log(type);
                     if (IS_SINGLETON[type]){
                         if (!(type in atomBuckets)){
                             ++counter;
@@ -86,23 +92,36 @@
                         if (!(type in atomBuckets)){
                             atomBuckets[type] = {};
                         }
-                        if (IS_OBJECT[type]){
-                            if (!(val in atomBuckets[type])){
-                                atomBuckets[type][val] = new Map();
+                        if (IS_SYMBOL[type]){
+                            var symStr = val.toString().slice(7,-1);
+                            if (!(symStr in atomBuckets[type])){
+                                atomBuckets[type][symStr] = {};
                             }
-                            if (!atomBuckets[type][val].has(val)){
+                            if (!(val in atomBuckets[type][symStr])){
                                 ++counter;
-                                atomBuckets[type][val].set(val, counter);
+                                atomBuckets[type][symStr][val] = counter;
                                 atoms[counter] = val;
                             }
-                            forest[currentIdx][key] = -atomBuckets[type][val].get(val);
+                            forest[currentIdx][key] = -atomBuckets[type][symStr][val];
                         } else {
-                            if (!(val in atomBuckets[type])){
-                                ++counter;
-                                atomBuckets[type][val] = counter;
-                                atoms[counter] = val;
-                             }
-                            forest[currentIdx][key] = -atomBuckets[type][val];
+                            if (IS_OBJECT[type]){
+                                if (!(val in atomBuckets[type])){
+                                    atomBuckets[type][val] = new Map();
+                                }
+                                if (!atomBuckets[type][val].has(val)){
+                                    ++counter;
+                                    atomBuckets[type][val].set(val, counter);
+                                    atoms[counter] = val;
+                                }
+                                forest[currentIdx][key] = -atomBuckets[type][val].get(val);
+                            } else {
+                                if (!(val in atomBuckets[type])){
+                                    ++counter;
+                                    atomBuckets[type][val] = counter;
+                                    atoms[counter] = val;
+                                 }
+                                forest[currentIdx][key] = -atomBuckets[type][val];
+                            }
                         }
                     }
                 } else {
@@ -122,11 +141,11 @@
                     inverseObjects.set(tos, objects.length);
                     forest[objects.length] = Array.isArray(tos) ? [] : {};
                     objects.push(tos);
-                    aKeys_sing = []; aKeys_obj = []; aKeys = []; oKeys = []; ty = {};
+                    aKeys_sing = []; aKeys_obj = []; aKeys_symb = []; aKeys = []; oKeys = []; ty = {};
                     Object.keys(tos).forEach(function(key){
                         var v = tos[key], type = TYPE_OF(v);
                         (type
-                            ? ( IS_SINGLETON[type] ? aKeys_sing : ( IS_OBJECT[type] ? aKeys_obj : aKeys ) )
+                            ? ( IS_SINGLETON[type] ? aKeys_sing : ( IS_OBJECT[type] ? aKeys_obj : ( IS_SYMBOL[type] ? aKeys_symb : aKeys ) ) )
                             : oKeys
                         ).push(key);
                         ty[key] = type;
@@ -149,6 +168,18 @@
                             atoms[counter] = v;
                         }
                         forest[objects.length-1][key] = -atomBuckets[type][v];
+                    });
+                    aKeys_symb.forEach(function(key){
+                        var v = tos[key], type = ty[key];
+                        if (!(type in atomBuckets)){ atomBuckets[type] = {}; }
+                        var symStr = v.toString().slice(7,-1);
+                        if (!(symStr in atomBuckets[type])){ atomBuckets[type][symStr] = {}; }
+                        if (!(v in atomBuckets[type][symStr])){
+                            ++counter;
+                            atomBuckets[type][symStr][v] = counter;
+                            atoms[counter] = v;
+                        }
+                        forest[objects.length-1][key] = -atomBuckets[type][symStr][v];
                     });
                     aKeys_obj.forEach(function(key){
                         var v = tos[key], type = ty[key];
@@ -198,7 +229,9 @@
             }
         }
         discover(); // if you use recursive version, pass root as argument
+//console.log(atoms);
 //console.log(atomBuckets);
+
         var types = [], sortedAtoms = [], reorder = [], newCounter = 0;
         Object.keys(atomBuckets).map(function(t){ return TYPE_IDX[t]; }).sort(ascending).forEach(function(typeIdx){
             var typeName = TYPE_NAMES[typeIdx];
@@ -209,26 +242,43 @@
                 reorder[bucket] = newCounter;
                 sortedAtoms[newCounter] = atoms[bucket];
             } else {
-                if (IS_OBJECT[typeName]){
-                    Object.keys(bucket).forEach(function(valueString){
-                        var map = bucket[valueString];
-                        map.forEach(function(image, source){
+                if (IS_SYMBOL[typeName]){
+                    Object.keys(bucket).forEach(function(symStr){
+                        var subBucket = bucket[symStr];
+                        var s = Object.getOwnPropertySymbols(subBucket);
+                        s.forEach(function(source){
+                            var image = subBucket[source];
                             ++newCounter;
                             reorder[image] = newCounter;
                             sortedAtoms[newCounter] = source;
                             if (source!==atoms[image]){
-                                if (false) console.log(typeName,bucket,map,atoms,sortedAtoms,atomBuckets);
+                                if (false){console.log(types,sortedAtoms,reorder,newCounter,typeName,bucket,types,symStr,subBucket,s);}
                                 debugger; throw new Error('unexpected');
                             }
                         });
                     });
                 } else {
-                    Object.keys(bucket).forEach(function(valueString){
-                        ++newCounter;
-                        var oldIdx = bucket[valueString];
-                        reorder[oldIdx] = newCounter;
-                        sortedAtoms[newCounter] = atoms[oldIdx];
-                    });
+                    if (IS_OBJECT[typeName]){
+                        Object.keys(bucket).forEach(function(valueString){
+                            var map = bucket[valueString];
+                            map.forEach(function(image, source){
+                                ++newCounter;
+                                reorder[image] = newCounter;
+                                sortedAtoms[newCounter] = source;
+                                if (source!==atoms[image]){
+                                    if (false) console.log(typeName,bucket,map,atoms,sortedAtoms,atomBuckets);
+                                    debugger; throw new Error('unexpected');
+                                }
+                            });
+                        });
+                    } else {
+                        Object.keys(bucket).forEach(function(valueString){
+                            ++newCounter;
+                            var oldIdx = bucket[valueString];
+                            reorder[oldIdx] = newCounter;
+                            sortedAtoms[newCounter] = atoms[oldIdx];
+                        });
+                    }
                 }
             }
         });
@@ -314,7 +364,8 @@
             Date   : tostr,
             RegExp : tostr,
             Native : native,
-            function: function(){ return null; }
+            function: function(){ return null; },
+            symbol  : function(s){ return s.toString().slice(7,-1); }
         };
         var atoms = forestified.atoms;
         var forest = forestified.forest;
@@ -369,7 +420,8 @@
             Date    : function(dateStr){ return new Date(dateStr); },
             RegExp  : regExpFromString,
             Native  : return_null,
-            function: return_null
+            function: return_null,
+            symbol  : function(symStr){ return Symbol(symStr); }
         };
         var parsed = JSON.parse(string);
         var _atoms = parsed.atoms;
