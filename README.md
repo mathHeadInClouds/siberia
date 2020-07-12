@@ -101,7 +101,7 @@ function forestify_aka_decycle(root){
 The objects table, being an array which in each slot contains a simple key-value pair list (with is a depth 1 tree), is called the forest, thus the name.
 And since the trees of the forest are frozen, "siberia" was chosen as the name of the algorithm.
 
-The reverse process (`unforestify` aka retrocycle) in even more straightforward: First, for each tree in the forest, generate either an empty array, or an empty plain object. Then, in a double loop over trees of the forest, and keys of the tree, do an obvious assignment, the right hand side of which is a "thawed" tree in the thawed forest we're just constructing, or a atom fetched from the atmoics table.
+The reverse process (`unforestify` aka retrocycle) in even more straightforward: First, for each tree in the forest, generate either an empty array, or an empty plain object. Then, in a double loop over trees of the forest, and keys of the tree, do an obvious assignment, the right hand side of which is a "thawed" tree in the thawed forest we're just constructing, or a atom fetched from the atoms table.
 
 
 ```javascript
