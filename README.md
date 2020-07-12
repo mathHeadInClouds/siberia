@@ -63,32 +63,32 @@ A slightly simplified version of the serialization algorithm (namely, one which 
 
 ```javascript
 function forestify_aka_decycle(root){
-	var objects = [], inverseObjects = new WeakMap(), forest = [];
-	var atomics = {}, atomicCounter = 0;
-	function discover(obj){
-	    var currentIdx = objects.length;
-	    inverseObjects.set(obj, currentIdx);
-	    objects.push(obj);
-	    forest[currentIdx] = Array.isArray(obj) ? [] : {};
-	    Object.keys(obj).forEach(function(key){
-	        var val = obj[key], type = typeof val;
-	        if ((type==='object')&&(val!==null)){
-	            if (inverseObjects.has(val)){ // known object already has index
-	                forest[currentIdx][key] = inverseObjects.get(val);
-	            } else {                      // unknown object, must recurse
-	                forest[currentIdx][key] = discover(val);
-	            }
-	        } else {
-	            if (!(val in atomics)){
+    var objects = [], inverseObjects = new WeakMap(), forest = [];
+    var atomics = {}, atomicCounter = 0;
+    function discover(obj){
+        var currentIdx = objects.length;
+        inverseObjects.set(obj, currentIdx);
+        objects.push(obj);
+        forest[currentIdx] = Array.isArray(obj) ? [] : {};
+        Object.keys(obj).forEach(function(key){
+            var val = obj[key], type = typeof val;
+            if ((type==='object')&&(val!==null)){
+                if (inverseObjects.has(val)){ // known object already has index
+                    forest[currentIdx][key] = inverseObjects.get(val);
+                } else {                      // unknown object, must recurse
+                    forest[currentIdx][key] = discover(val);
+                }
+            } else {
+                if (!(val in atomics)){
 	                ++atomicCounter;                 // atoms table new entry
 	                atomics[val] = atomicCounter;
-	            }
-	            forest[currentIdx][key] = -atomics[val];      // rhs negative
-	        }
-	    });
-	    return currentIdx;
-	}
-	discover(root);
+            	}
+            	forest[currentIdx][key] = -atomics[val];      // rhs negative
+            }
+        });
+        return currentIdx;
+    }
+    discover(root);
     var atomsTable = [];
     Object.keys(atomics).forEach(function(k){ atomsTable[atomics[k]] = k; });
     return {
