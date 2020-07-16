@@ -446,7 +446,7 @@
                 }
             }
         }
-        if (types.filter(function(typeDescription){ return typeDescription.name==='function'}).length>=0){
+        if (types.filter(function(typeDescription){ return typeDescription.name==='function'}).length>0){
             console.warn('please note: stringify/unstringify destroys functions');
         }
         return {
