@@ -361,7 +361,7 @@
         var functions = {
             string : identity,
             number : str,
-            Date   : tostr,
+            Date   : function(o){ return o.toISOString(); },
             RegExp : tostr,
             Native : native,
             function: function(){ return null; },
